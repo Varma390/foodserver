@@ -55,41 +55,18 @@ otherroute.get('/',(req,res) => {
     res.send('success')
 })
 
-otherroute.post('/add',async (req,res) => {
+
+
+otherroute.post('/add',upload.single('myImage'),async (req,res) => {
   console.log(req.body,req.file)
 
     try {
-
-   
-        let obj1 = {
-          "Name": "pizza",
-          "Image": "https://images.unsplash.com/photo-1513104890138-7c749659a591?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8cGl6emF8ZW58MHx8MHx8&auto=format&fit=crop&w=500&q=60",
-          "Ingredients": [
-              "2\/3 cup pank",
-              "1\/4 teaspoon red pepper flakes",
-              "1\/2 lemon, zested and juiced",
-              "1 extra-large egg yolk",
-              "1 teaspoon rosemary, minced",
-              "3 tablespoon parsley, minced",
-              "4 clove garlic, minced",
-              "1\/4 cup shallots, minced",
-              "8 tablespoon unsalted butter, softened at room temperature",
-              "2 tablespoon dry white wine",
-              "Freshly ground black pepper",
-              "Kosher salt",
-              "3 tablespoon olive oil",
-              "2 pound frozen shrimp"
-          ],
-          "Steps": [
-              "Place beef roast in crock pot.",
-              "Mix the dried mixes together in a bowl and sprinkle over the roast.",
-              "Pour the water around the roast.",
-              "Cook on low for 7-9 hours."
-          ],
-          "Description": "Preheat the oven to 425 degrees F.Defrost shrimp by putting in cold water, then drain and toss with wine, oil, salt, and pepper. Place in oven-safe dish and allow to sit at room temperature while you make the butter and garlic mixture.In a small bowl, mash the softened butter with the rest of the ingredients and some salt and pepper.Spread the butter mixture evenly over the shrimp. Bake for 10 to 12 minutes until hot and bubbly. If you like the top browned, place under a broiler for 1-3 minutes (keep an eye on it). Serve with lemon wedges and French bread.Note: if using fresh shrimp, arrange for presentation. Starting from the outer edge of a 14-inch oval gratin dish, arrange the shrimp in a single layer cut side down with the tails curling up and towards the center of the dish. Pour the remaining marinade over the shrimp. ",
-          "userid":req.user,
-        }
-        await recipeModal.create(obj1)
+      const uploadedImage = await cloudinary.uploader.upload(req.file.path,{
+        upload_preset: 'images'
+    })
+        let obj = {...req.body,Image: uploadedImage.secure_url, userid:req.user}
+        console.log(obj);
+        await recipeModal.create(obj)
         .then(data => {
             res.send({
                 status: "success",
@@ -103,30 +80,6 @@ otherroute.post('/add',async (req,res) => {
         })
     }
 })
-
-// otherroute.post('/add',upload.single('myImage'),async (req,res) => {
-//   console.log(req.body,req.file)
-
-//     try {
-//       const uploadedImage = await cloudinary.uploader.upload(req.file.path,{
-//         upload_preset: 'images'
-//     })
-//         let obj = {...req.body,Image: uploadedImage.secure_url, userid:req.user}
-//         console.log(obj);
-//         await recipeModal.create(obj)
-//         .then(data => {
-//             res.send({
-//                 status: "success",
-//                 mess : data
-//             })
-//         })
-//     } catch(err) {
-//         res.send({
-//             status: "failure",
-//             mess : err.message
-//         })
-//     }
-// })
 // otherroute.get('/search',async (req,res) => {
 //   await recipeModal.findOne({ userid: req.user, })
 //   .then(data => {
